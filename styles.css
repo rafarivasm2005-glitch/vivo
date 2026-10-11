@@ -280,4 +280,4 @@ input[type=range]{width:100%;margin:8px 0;accent-color:var(--fg)}
 .homehead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .homehead .lt{margin:14px 0 4px}
 .logo{width:50px;height:50px;border-radius:23%;background:var(--fg);flex:none;position:relative;overflow:hidden}
-.logo i{position:absolute;inset:0;background:var(--bg);-webkit-mask:url(icons/logo-mark.png) center/100% 100% no-repeat;mask:url(icons/logo-mark.png) center/100% 100% no-repeat}
+.logo i{position:absolute;inset:0;background:var(--bg);-webkit-mask:url(logo-mark.png) center/100% 100% no-repeat;mask:url(logo-mark.png) center/100% 100% no-repeat}

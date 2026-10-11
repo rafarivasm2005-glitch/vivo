@@ -3,7 +3,7 @@ const C = 'kivo-v5';
 const FILES = [
   './', './index.html', './styles.css', './manifest.json',
   './plan.js', './core.js', './sport.js', './food.js', './life.js', './sportui.js', './home.js', './main.js',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png', './icons/logo-mark.png',
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png', './logo-mark.png',
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))).then(() => self.skipWaiting()));
