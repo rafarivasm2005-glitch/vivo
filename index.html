@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kivo">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Kivo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="nav">
+    <div class="datenav">
+      <button class="iconbtn" data-action="prev" aria-label="Día anterior">‹</button>
+      <button class="datelabel" data-action="todayBtn" id="dateLabel"></button>
+      <button class="iconbtn" data-action="next" aria-label="Día siguiente">›</button>
+    </div>
+    <div class="navr"><button class="iconbtn" id="themeBtn" data-action="theme" aria-label="Cambiar tema"></button><button class="iconbtn" id="profileBtn" data-action="goto" data-view="ajustes" aria-label="Perfil"></button></div>
+  </header>
+  <main id="main"></main>
+</div>
+<nav class="tabs" id="tabs"></nav>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+<script src="plan.js"></script>
+<script src="core.js"></script>
+<script src="sport.js"></script>
+<script src="food.js"></script>
+<script src="life.js"></script>
+<script src="sportui.js"></script>
+<script src="home.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
