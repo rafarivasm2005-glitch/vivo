@@ -303,3 +303,8 @@ input,textarea,[contenteditable]{-webkit-touch-callout:default;-webkit-user-sele
 .tabs button.on{background:var(--soft)}
 .toast{bottom:calc(92px + env(safe-area-inset-bottom))}
 .app{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+
+/* Menú flotante: cristal esmerilado (el contenido de debajo no se lee) + difuminado del borde inferior */
+.tabs{background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(40px) saturate(1.9);-webkit-backdrop-filter:blur(40px) saturate(1.9)}
+:root[data-theme="dark"] .tabs{background:color-mix(in srgb,var(--card) 86%,transparent)}
+body::after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(96px + env(safe-area-inset-bottom));z-index:9;pointer-events:none;background:linear-gradient(to bottom,transparent,var(--bg) 70%)}
