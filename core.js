@@ -196,8 +196,7 @@ const themeNow = () => S.settings.theme || (matchMedia('(prefers-color-scheme: d
 function applyTheme() {
   const t = themeNow(), sys = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   document.documentElement.dataset.theme = t;
-  // La barra de estado del iPhone sigue el modo del sistema: si la app usa otro tema, se pinta esa franja con el color del sistema para que la hora siempre se lea
-  if (t !== sys) document.documentElement.dataset.mismatch = sys; else delete document.documentElement.dataset.mismatch;
+  document.documentElement.dataset.sys = sys;
   document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', t === 'dark' ? '#000000' : '#ffffff'));
   $('#themeBtn').innerHTML = svg(t === 'dark' ? 'sun' : 'moon', 22);
   $('#profileBtn').innerHTML = svg('user', 22);

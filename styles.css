@@ -295,6 +295,11 @@ body{min-height:100vh;min-height:100dvh;touch-action:manipulation;-webkit-touch-
 .nav{margin-left:calc(-1 * max(18px,env(safe-area-inset-left)));margin-right:calc(-1 * max(18px,env(safe-area-inset-right)));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
 .tabs{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
 input,textarea,[contenteditable]{-webkit-touch-callout:default;-webkit-user-select:text;user-select:text}
-html[data-mismatch]::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);z-index:60;background:var(--sysbg)}
-html[data-mismatch="dark"]{--sysbg:#000}
-html[data-mismatch="light"]{--sysbg:#fff}
+
+/* Menú inferior flotante: una sola cápsula redondeada con todas las secciones dentro */
+.tabs{left:50%;right:auto;transform:translateX(-50%);width:min(calc(100% - 32px),440px);bottom:calc(10px + env(safe-area-inset-bottom));padding:6px;gap:2px;border-radius:30px;border:.5px solid var(--line);background:color-mix(in srgb,var(--card) 78%,transparent);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);box-shadow:0 10px 32px rgba(0,0,0,.14),0 1px 2px rgba(0,0,0,.06)}
+:root[data-theme="dark"] .tabs{box-shadow:0 10px 32px rgba(0,0,0,.55)}
+.tabs button{max-width:none;flex:1;padding:8px 0 7px;border-radius:24px;transition:background .2s,color .2s}
+.tabs button.on{background:var(--soft)}
+.toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+.app{padding-bottom:calc(120px + env(safe-area-inset-bottom))}

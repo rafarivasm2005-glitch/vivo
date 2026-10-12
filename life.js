@@ -79,7 +79,7 @@ VIEWS.ajustes = () => {
   <h1 class="lt">Perfil</h1>
   <h3 class="gh">Apariencia</h3>
   <div class="card pad"><div class="seg" style="margin:0">${[['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([v, l]) => `<button class="${(S.settings.theme || 'auto') === v ? 'on' : ''}" data-action="setTheme" data-v="${v}">${l}</button>`).join('')}</div>
-    <p class="note">Automático sigue el modo de tu iPhone. Para que la app se funda con la barra de estado y el notch, usa Automático o el mismo modo que el del iPhone.</p></div>
+    <p class="note">Automático sigue el modo de tu iPhone y es la única forma de que la app se funda con la barra de arriba (hora, batería y notch).${(S.settings.theme && S.settings.theme !== (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) ? ' <b>Ahora mismo tu tema es distinto al del iPhone, por eso la barra de arriba se ve de otro color.</b>' : ''}</p></div>
   <h3 class="gh">General</h3>
   <div class="card pad">
     <label class="lbl">Nombre</label><div class="field"><input type="text" id="setName" placeholder="Tu nombre" value="${esc(s.name)}"></div>
