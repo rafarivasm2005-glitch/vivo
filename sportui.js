@@ -26,7 +26,8 @@ function sessionCard(s) {
   return `<div class="card pad sess">
     <div class="srow"><div><p class="eyebrow">${s.dayName} ${dshort(s.date)}${s.mandatory ? '' : ' · opcional'}${s.conditional ? ' · condicional' : ''}</p><div class="sname">${T.name}</div></div>
     <div class="skm">${fmtKm(s.km)}<small>km</small></div></div>
-    ${s.state ? `<p class="tag">${stateIcon(s)} ${STATE_LABEL[s.state]}</p>` : `${s.late ? '<p class="tag">– No realizada: pasó la fecha sin registrar el entreno</p>' : ''}<p class="desc">${T.desc}</p>${thu}`}
+    ${s.why.length && s.km !== s.baseKm ? `<p class="note" style="margin:6px 0 0">Plan base ${fmtKm(s.baseKm)} km · ${s.why.join(' + ')}</p>` : ''}
+    ${s.state ? `<p class="tag">${stateIcon(s)} ${STATE_LABEL[s.state]}${(() => { const l = R().log.filter(x => x.session_key === s.key)[0]; return l ? ` · hiciste ${fmtKm(l.actual_km)} km` : ''; })()}</p>` : `${s.late ? '<p class="tag">– No realizada: pasó la fecha sin registrar el entreno</p>' : ''}<p class="desc">${T.desc}</p>${thu}`}
     ${al.map(alertHTML).join('')}
     <div class="btns">
       ${s.state ? '' : `<button class="btn" data-action="openLog" data-key="${s.key}">Completar</button>`}
@@ -71,6 +72,8 @@ function sResumen() {
   <div class="card pad">
     <div class="wdots">${wkSess.slice().sort((a, b) => (a.date < b.date ? -1 : 1)).map(s => `<button class="wd ${s.state ? 'on' : ''} ${s.late ? 'late' : ''}" data-action="openSession" data-key="${s.key}"><i>${stateIcon(s) || ''}</i>${s.short}${s.date !== s.baseDate ? ' ↪' : ''}<small>${s.date < wkStart || s.date > wkEnd ? dshort(s.date) + ' · ' : ''}${fmtKm(s.km)}</small></button>`).join('')}</div>
     <p class="note" style="margin-top:12px">${wk.note}</p>
+    ${R().weekScale[wk.w] || R().weekFlags[wk.w] ? `<p class="note">Hay un ajuste del coach en esta semana. <button class="inl" data-action="clearWeekAdj" data-w="${wk.w}">Quitar ajuste</button></p>` : ''}
+    ${R().scale < 0.995 ? `<p class="note">Distancias al ${Math.round(R().scale * 100)} % por la calibración. <button class="inl" data-action="openCalib">Cambiar</button></p>` : ''}
   </div>
 
   ${gate ? `<h3 class="gh">Puerta de control · semana ${wk.w}</h3><div class="card list">${gateItems(wk.w).map(i => `<div class="row"><div class="t"><b>${i.label}</b></div><span class="v">${i.ok === true ? '✓' : i.ok === false ? '✗' : '–'}</span></div>`).join('')}</div>
@@ -127,7 +130,7 @@ function logSheet(id, key) {
     <label class="lbl">Fecha</label><div class="field"><input type="date" id="fDate" value="${v.date_local}"></div>
     <div class="two">
       <div><label class="lbl">Distancia (km)</label><div class="field"><input type="number" step="0.01" id="fKm" inputmode="decimal" value="${v.actual_km}" placeholder="0,0" data-live="pace"></div></div>
-      <div><label class="lbl">Tiempo (h:mm:ss)</label><div class="field"><input type="text" id="fTime" inputmode="numeric" value="${v.moving_seconds ? fmtTime(v.moving_seconds) : ''}" placeholder="52:30" data-live="pace"></div></div>
+      <div><label class="lbl">Tiempo (mm:ss o h:mm:ss)</label><div class="field"><input type="text" id="fTime" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" value="${v.moving_seconds ? fmtTime(v.moving_seconds) : ''}" placeholder="52:30" data-live="pace"></div></div>
     </div>
     <p class="pace" id="fPace">${v.avg_pace_seconds_per_km ? fmtPace(v.avg_pace_seconds_per_km) + ' min/km' : 'Ritmo: –'}</p>
     <h3 class="gh" style="margin-left:0">¿Cómo te has sentido?</h3>
@@ -138,7 +141,7 @@ function logSheet(id, key) {
     <label class="lbl">Dónde</label>
     <div class="chips" data-group="fLoc">${PAIN_LOC.map(p => `<button class="chip ${p === v.pain_location ? 'on' : ''}" data-action="pick" data-v="${p}">${p}</button>`).join('')}</div>
     <label class="lbl">Fatiga (1 baja – 5 alta)</label>${scale5('fFat', v.fatigue_1_5)}
-    <label class="lbl">Notas</label><div class="field"><input type="text" id="fNotes" value="${esc(v.notes)}" placeholder="Sensaciones, clima, ruta…"></div>
+    <label class="lbl">Notas</label><textarea id="fNotes" style="min-height:100px" placeholder="Sensaciones, clima, ruta…">${esc(v.notes)}</textarea>
     <button class="btn" data-action="saveLog">Guardar</button>
     ${e ? '<button class="btn danger" data-action="delLog">Borrar entreno</button>' : ''}
   </div>`);

@@ -24,8 +24,8 @@ function mindStatus(k) {
   const d = get(k), hs = S.settings.habits;
   const hd = hs.filter(h => d.habits[h.id]).length;
   const hp = hs.length ? hd / hs.length : 1;
-  const refl = !!d.reflection.trim();
-  return { done: !!d.mood && hd === hs.length && refl, pct: ((d.mood ? 1 : 0) + hp + (refl ? 1 : 0)) / 3, text: `${hd}/${hs.length} hábitos${refl ? '' : ' · reflexión pendiente'}` };
+  const refl = !!d.reflection.trim(), allHabits = hd === hs.length;
+  return { short: `${(d.mood ? 1 : 0) + (allHabits ? 1 : 0) + (refl ? 1 : 0)}/3`, done: !!d.mood && allHabits && refl, pct: ((d.mood ? 1 : 0) + hp + (refl ? 1 : 0)) / 3, text: `${hd}/${hs.length} hábitos${refl ? '' : ' · reflexión pendiente'}` };
 }
 
 /* ---------- bloques reutilizables ---------- */
@@ -77,6 +77,9 @@ VIEWS.ajustes = () => {
   const s = S.settings;
   return `
   <h1 class="lt">Perfil</h1>
+  <h3 class="gh">Apariencia</h3>
+  <div class="card pad"><div class="seg" style="margin:0">${[['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([v, l]) => `<button class="${(S.settings.theme || 'auto') === v ? 'on' : ''}" data-action="setTheme" data-v="${v}">${l}</button>`).join('')}</div>
+    <p class="note">Automático sigue el modo de tu iPhone. Para que la app se funda con la barra de estado y el notch, usa Automático o el mismo modo que el del iPhone.</p></div>
   <h3 class="gh">General</h3>
   <div class="card pad">
     <label class="lbl">Nombre</label><div class="field"><input type="text" id="setName" placeholder="Tu nombre" value="${esc(s.name)}"></div>

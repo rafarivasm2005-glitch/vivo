@@ -124,6 +124,45 @@ function closeSheet() {
 }
 A.closeSheet = () => { closeSheet(); return false; };
 
+/* Cerrar la hoja deslizando hacia abajo (desde el tirador o con el contenido arriba del todo) */
+(function sheetSwipe() {
+  const sh = document.getElementById('sheet');
+  let p = null, y0 = 0, x0 = 0, dy = 0, t0 = 0, drag = false, fromGrab = false;
+  const reset = () => { const sc = sh.querySelector('.scrim'); if (sc) sc.style.opacity = ''; };
+  sh.addEventListener('touchstart', e => {
+    p = e.target.closest('.panel');
+    if (!p || e.target.closest('input[type=range]')) { p = null; return; }
+    const t = e.touches[0];
+    y0 = t.clientY; x0 = t.clientX; dy = 0; t0 = Date.now(); drag = false; fromGrab = !!e.target.closest('.grab');
+  }, { passive: true });
+  sh.addEventListener('touchmove', e => {
+    if (!p) return;
+    const t = e.touches[0];
+    dy = t.clientY - y0;
+    if (!drag) {
+      const dx = t.clientX - x0;
+      if (dy > 2 && Math.abs(dy) > Math.abs(dx) && (p.scrollTop <= 0 || fromGrab)) { drag = true; p.style.transition = 'none'; }
+      else return;
+    }
+    e.preventDefault();
+    p.style.transform = `translateY(${Math.max(0, dy)}px)`;
+    const sc = sh.querySelector('.scrim');
+    if (sc) sc.style.opacity = String(Math.max(0, 1 - dy / p.offsetHeight));
+  }, { passive: false });
+  const end = () => {
+    if (!p) return;
+    if (drag) {
+      const v = dy / Math.max(1, Date.now() - t0);
+      p.style.transition = 'transform .3s cubic-bezier(.2,.8,.2,1)';
+      if (dy > 110 || v > 0.6) { p.style.transform = 'translateY(100%)'; reset(); closeSheet(); }
+      else { p.style.transform = ''; reset(); }
+    }
+    p = null; drag = false;
+  };
+  sh.addEventListener('touchend', end);
+  sh.addEventListener('touchcancel', end);
+})();
+
 let toastT;
 function toast(msg) {
   const el = $('#toast');
@@ -155,13 +194,17 @@ function render() {
 /* ---------- tema ---------- */
 const themeNow = () => S.settings.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 function applyTheme() {
-  const t = themeNow();
+  const t = themeNow(), sys = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   document.documentElement.dataset.theme = t;
+  // La barra de estado del iPhone sigue el modo del sistema: si la app usa otro tema, se pinta esa franja con el color del sistema para que la hora siempre se lea
+  if (t !== sys) document.documentElement.dataset.mismatch = sys; else delete document.documentElement.dataset.mismatch;
   document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', t === 'dark' ? '#000000' : '#ffffff'));
   $('#themeBtn').innerHTML = svg(t === 'dark' ? 'sun' : 'moon', 22);
   $('#profileBtn').innerHTML = svg('user', 22);
 }
 A.theme = () => { S.settings.theme = themeNow() === 'dark' ? 'light' : 'dark'; applyTheme(); };
+A.setTheme = el => { S.settings.theme = el.dataset.v === 'auto' ? null : el.dataset.v; applyTheme(); };
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { applyTheme(); render(); }); } catch (e) {}
 
 A.prev = () => { cur = shift(cur, -1); };
 A.next = () => { cur = shift(cur, 1); };

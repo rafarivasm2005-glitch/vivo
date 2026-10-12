@@ -53,7 +53,7 @@ function foodStatus(k) { // alimenta Home y la racha
   const has = F().entries.some(e => e.local_date === k);
   const state = total === 0 ? 'not_configured' : done ? 'done' : 'pending';
   return {
-    state, done, completed, total, has, pct: total ? completed / total : 0, inner: total ? `${completed}/${total}` : '–',
+    state, done, completed, total, has, short: `${completed}/${total}`, pct: total ? completed / total : 0, inner: total ? `${completed}/${total}` : '–',
     text: total === 0 ? 'Sin objetivos' : `${completed}/${total} · ${done ? 'Hecho' : has ? 'Pendiente' : 'Sin registros'}`,
   };
 }

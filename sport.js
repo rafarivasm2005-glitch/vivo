@@ -59,8 +59,13 @@ function sessionsOfWeek(wk) {
     let km = st.km ?? scaleKm(wk[d.key], sc);
     if (type === 'goal_event' && st.km == null) km = stretchEval().state === 'listo' ? PLAN.stretchKm : PLAN.primaryKm;
     const baseDate = shift(weekStart(wk.w), d.off), date = st.moveTo || baseDate;
+    const gs = R().scale, ws = R().weekScale[wk.w] ?? 1, why = [];
+    if (type !== 'goal_event') {
+      if (st.km != null) why.push('ajustada por ti');
+      else { if (gs < 0.995) why.push(`calibración ${Math.round(gs * 100)} %`); if (ws < 0.995) why.push(`ajuste del coach ${Math.round(ws * 100)} %`); }
+    }
     return {
-      key, week: wk.w, day: d.key, dayName: WD_NAME[weekdayMon(date)], short: WD_SHORT[weekdayMon(date)], type, baseKm: wk[d.key], km,
+      why, key, week: wk.w, day: d.key, dayName: WD_NAME[weekdayMon(date)], short: WD_SHORT[weekdayMon(date)], type, baseKm: wk[d.key], km,
       baseDate, date, late: !st.state && date < today(),
       mandatory: d.key !== 'fri', conditional: d.key === 'sun' && !!wk.cond,
       dropped: d.key === 'fri' && !!flags.dropFri,
@@ -134,12 +139,12 @@ function nextSession() {
 function sportStatus(k) {
   const ss = sessionsOn(k);
   const mand = ss.filter(s => s.mandatory);
-  if (k < PLAN.start) return { done: true, pct: 1, text: 'Antes del plan · descanso', rest: true };
-  if (!mand.length) return { done: true, pct: 1, text: ss.length ? 'Sesión opcional · descansar cuenta' : 'Día de descanso', rest: true };
+  if (k < PLAN.start) return { done: true, pct: 1, short: 'Descanso', text: 'Antes del plan · descanso', rest: true };
+  if (!mand.length) return { done: true, pct: 1, short: 'Descanso', text: ss.length ? 'Sesión opcional · descansar cuenta' : 'Día de descanso', rest: true };
   const d = mand.filter(s => s.state === 'done' || s.state === 'rest').length;
-  if (d === mand.length) return { done: true, pct: 1, text: 'Sesión cumplida' };
+  if (d === mand.length) return { done: true, pct: 1, short: `${d}/${mand.length}`, text: 'Sesión cumplida' };
   const s = mand.find(x => !(x.state === 'done' || x.state === 'rest'));
-  return { done: false, pct: d / mand.length, text: s.state === 'missed' || s.late ? 'No realizada' : `${TYPES[s.type].name} · ${fmtKm(s.km)} km` };
+  return { done: false, pct: d / mand.length, short: `${d}/${mand.length}`, text: s.state === 'missed' || s.late ? 'No realizada' : `${TYPES[s.type].name} · ${fmtKm(s.km)} km` };
 }
 
 /* ---------- récords y marcas ---------- */
@@ -218,15 +223,10 @@ function advice() {
     if (ck.fatigue >= 4) ease(0.85, 'Fatiga alta esta semana.');
   }
   const hardEasy = recent.filter(l => l.session_type === 'easy' && l.rpe_0_10 >= 7);
-  if (hardEasy.length) ease(0.9, 'Tus rodajes fáciles te han costado RPE 7 o más: ve más lento.', false);
+  if (hardEasy.length) reasons.push('Algún rodaje fácil te ha costado RPE 7 o más: la próxima, más suave. El plan no cambia.');
   const prev = wkObj(Math.max(1, tw - 1));
   const missedPrev = sessionsOfWeek(prev).filter(s => s.mandatory && !s.dropped && (s.state === 'missed' || s.late)).length;
   if (tw > 1 && missedPrev >= 2) ease(0.85, 'Perdiste varias sesiones la semana pasada: no recuperamos kilómetros; retrocedemos algo la carga.', false);
-  const lastActual = weekActualKm(prev), prevPlan = weekPlanKm(prev);
-  const tPlan = weekPlanKm(wk);
-  if (tw > 1 && weekStart(tw) > PLAN.start && prevPlan > 0 && lastActual < prevPlan * 0.7 && tPlan > lastActual * 1.3 && R().log.length) {
-    ease(Math.max(0.7, Math.min(1, (lastActual * 1.25) / tPlan)), 'Vas por debajo del plan: evitamos un salto grande de volumen.', false);
-  }
   sessionsOfWeek(wk).filter(s => !s.state).forEach(s => alertsFor(s).filter(a => a.kind !== 'nodata').forEach(a => reasons.push(`${TYPES[s.type].name} (${s.short}): ${a.text}`)));
   if (!reasons.length) reasons.push(wk.phase === 'Descarga' || wk.phase === 'Taper' ? 'Semana de descarga: todo fácil.' : 'Todo en orden. Sigue el plan tal cual.');
   return { level, factor, quality, dropFri, rest, reasons, target: tw };
@@ -280,6 +280,12 @@ function syncLinks() {
 }
 
 /* ---------- acciones de lógica ---------- */
+A.clearWeekAdj = el => {
+  const w = Number(el.dataset.w);
+  delete R().weekScale[w]; delete R().weekFlags[w];
+  hist(`${w}-sun`, 'Ajuste del coach quitado', 'Distancias de la semana restauradas');
+  toast('Distancias de la semana restauradas');
+};
 A.setState = el => {
   const { key, st } = el.dataset;
   setState(key, st === 'null' ? null : st);

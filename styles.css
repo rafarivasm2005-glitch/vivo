@@ -144,7 +144,7 @@ input[type=range]{width:100%;margin:8px 0;accent-color:var(--fg)}
 .rings{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .rings button{text-align:center;padding:4px 0}
 .rings b{display:block;margin-top:10px;font-size:15px}
-.rings button > span{display:block;font-size:11px;color:var(--mute);line-height:1.3;margin-top:2px}
+.rings button > span{display:block;font-size:15px;font-weight:500;color:var(--mute);line-height:1.3;margin-top:3px;white-space:nowrap}
 
 /* Home */
 .streak .big{font-size:76px}
@@ -281,3 +281,20 @@ input[type=range]{width:100%;margin:8px 0;accent-color:var(--fg)}
 .homehead .lt{margin:14px 0 4px}
 .logo{width:50px;height:50px;border-radius:23%;background:var(--fg);flex:none;position:relative;overflow:hidden}
 .logo i{position:absolute;inset:0;background:var(--bg);-webkit-mask:url(logo-mark.png) center/100% 100% no-repeat;mask:url(logo-mark.png) center/100% 100% no-repeat}
+
+.inl{color:var(--fg);text-decoration:underline;font-size:13px;display:inline}
+
+.panel{overscroll-behavior:contain}
+.grab{padding:8px 0;background-clip:content-box;height:21px;width:60px;border-radius:0;background:none;position:relative}
+.grab::after{content:'';position:absolute;left:12px;right:12px;top:8px;height:5px;border-radius:99px;background:var(--line2)}
+
+/* Integración con iPhone: pantalla completa, notch / isla dinámica y barra inferior */
+html{background:var(--bg);overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;touch-action:manipulation;-webkit-touch-callout:none}
+.app{padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}
+.nav{margin-left:calc(-1 * max(18px,env(safe-area-inset-left)));margin-right:calc(-1 * max(18px,env(safe-area-inset-right)));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+.tabs{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+input,textarea,[contenteditable]{-webkit-touch-callout:default;-webkit-user-select:text;user-select:text}
+html[data-mismatch]::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);z-index:60;background:var(--sysbg)}
+html[data-mismatch="dark"]{--sysbg:#000}
+html[data-mismatch="light"]{--sysbg:#fff}

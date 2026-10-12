@@ -57,7 +57,7 @@ VIEWS.home = () => {
   <h3 class="gh">Objetivos del día</h3>
   <div class="card pad">
     <div class="rings">${AREAS.map(([v, l, c]) => `<button data-action="goto" data-view="${v}">
-      ${ring(st[c].pct, 74, 7, st[c].done ? '✓' : st[c].inner || Math.round(st[c].pct * 100) + '%')}<b>${l}</b><span>${st[c].text}</span></button>`).join('')}</div>
+      ${ring(st[c].pct, 74, 7, st[c].done ? '✓' : Math.round(st[c].pct * 100) + '%')}<b>${l}</b><span>${st[c].short}</span></button>`).join('')}</div>
   </div>
 
   <h3 class="gh">Últimas 5 semanas</h3>
